@@ -76,6 +76,8 @@ import { fromNow } from '../../../../base/common/date.js';
 import { IUserDataProfilesService } from '../../../../platform/userDataProfile/common/userDataProfile.js';
 import { IMeteredConnectionService } from '../../../../platform/meteredConnection/common/meteredConnection.js';
 
+const HIDDEN_EXTENSION_IDS = new Set(['saoudrizwan.claude-dev']);
+
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
 }
@@ -1307,12 +1309,15 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	get local(): IExtension[] {
 		if (!this._local) {
 			if (this.extensionsServers.length === 1) {
-				this._local = this.installed;
+				this._local = this.installed.filter(e => !HIDDEN_EXTENSION_IDS.has(e.identifier.id.toLowerCase()));
 			} else {
 				this._local = [];
 				const byId = groupByExtension(this.installed, r => r.identifier);
 				for (const extensions of byId) {
-					this._local.push(this.getPrimaryExtension(extensions));
+					const primary = this.getPrimaryExtension(extensions);
+					if (!HIDDEN_EXTENSION_IDS.has(primary.identifier.id.toLowerCase())) {
+						this._local.push(primary);
+					}
 				}
 			}
 		}
@@ -1392,13 +1397,13 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		const pager = await this.galleryService.query(options, token);
 		this.syncInstalledExtensionsWithGallery(pager.firstPage);
 		return {
-			firstPage: pager.firstPage.map(gallery => this.fromGallery(gallery, extensionsControlManifest)),
+			firstPage: pager.firstPage.map(gallery => this.fromGallery(gallery, extensionsControlManifest)).filter(e => !HIDDEN_EXTENSION_IDS.has(e.identifier.id.toLowerCase())),
 			total: pager.total,
 			pageSize: pager.pageSize,
 			getPage: async (pageIndex, token) => {
 				const page = await pager.getPage(pageIndex, token);
 				this.syncInstalledExtensionsWithGallery(page);
-				return page.map(gallery => this.fromGallery(gallery, extensionsControlManifest));
+				return page.map(gallery => this.fromGallery(gallery, extensionsControlManifest)).filter(e => !HIDDEN_EXTENSION_IDS.has(e.identifier.id.toLowerCase()));
 			}
 		};
 	}

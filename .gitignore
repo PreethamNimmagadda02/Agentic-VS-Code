@@ -1,0 +1,17 @@
+# Build output
+VSCode-darwin-arm64/
+CustomEditor.dmg
+
+# Node modules
+VS Code/node_modules/
+Cline/node_modules/
+
+# Build artifacts
+VS Code/out-build/
+VS Code/out-vscode-min/
+VS Code/.build/
+Cline/dist/
+Cline/dist-standalone/
+
+# OS files
+.DS_Store

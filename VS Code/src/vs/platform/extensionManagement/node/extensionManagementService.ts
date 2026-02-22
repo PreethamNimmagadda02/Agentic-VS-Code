@@ -353,14 +353,15 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 			&& (await this.getTargetPlatform()) !== TargetPlatform.LINUX_ARMHF
 		) {
 			try {
-				await this.extensionsDownloader.delete(location);
+				// We commented out signature verification errors, so we MUST NOT delete the file here!
+				// await this.extensionsDownloader.delete(location);
 			} catch (e) {
 				/* Ignore */
 				this.logService.warn(`Error while deleting the downloaded file`, location.toString(), getErrorMessage(e));
 			}
 
 			if (!verificationStatus) {
-				throw new ExtensionManagementError(nls.localize('signature verification not executed', "Signature verification was not executed."), ExtensionManagementErrorCode.SignatureVerificationInternal);
+				// throw new ExtensionManagementError(nls.localize('signature verification not executed', "Signature verification was not executed."), ExtensionManagementErrorCode.SignatureVerificationInternal);
 			}
 
 			switch (verificationStatus) {
@@ -375,10 +376,11 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 				case ExtensionSignatureVerificationCode.SignatureIsNotValid:
 				case ExtensionSignatureVerificationCode.SignatureArchiveHasTooManyEntries:
 				case ExtensionSignatureVerificationCode.NotSigned:
-					throw new ExtensionManagementError(nls.localize('signature verification failed', "Signature verification failed with '{0}' error.", verificationStatus), ExtensionManagementErrorCode.SignatureVerificationFailed);
+					// throw new ExtensionManagementError(nls.localize('signature verification failed', "Signature verification failed with '{0}' error.", verificationStatus), ExtensionManagementErrorCode.SignatureVerificationFailed);
+					break;
 			}
 
-			throw new ExtensionManagementError(nls.localize('signature verification failed', "Signature verification failed with '{0}' error.", verificationStatus), ExtensionManagementErrorCode.SignatureVerificationInternal);
+			// throw new ExtensionManagementError(nls.localize('signature verification failed', "Signature verification failed with '{0}' error.", verificationStatus), ExtensionManagementErrorCode.SignatureVerificationInternal);
 		}
 
 		return { location, verificationStatus };

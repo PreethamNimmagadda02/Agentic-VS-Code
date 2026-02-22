@@ -35,7 +35,7 @@ export function spawnTsgo(projectPath: string, config: { taskName: string; noEmi
 	const child = cp.spawn(npx, args, {
 		cwd: root,
 		stdio: ['ignore', 'pipe', 'pipe'],
-		shell: true
+		shell: false
 	});
 
 	let stdoutData = '';
